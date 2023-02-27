@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splash Screen</title>
+    <link rel="stylesheet" href="stylesheets/style.css">
+</head>
+<body>
+    <main>
+        <section id="left" style="text-align: left;">
+            <div id="left_corner">
+                <h4>
+                    Wins: 0
+                </h4>
+                <h4>
+                    Losses: 0
+                </h4>
+                <h4>
+                    W/L ratio: N/A
+                </h4>
+            </div>
+        </section>
+
+        <section id="middle" style="width:500px; margin-left: auto;
+        margin-right: auto;">
+            <h1>Connect 4</h1>
+
+            <form action="/game" method="get"> 
+                <label for="nickname">Nickname:</label>
+                <input type="text" id="nickname" name="nickname" required>
+                <input type="submit" value="Play" 
+                style="background-color: #19bc8b" color="#17181c">
+            </form>
+            <h3><em> Online Players: 0 </em></h3>
+        </section>
+    </main>
+</body>
+
+<footer>
+    <em> Made by Enes. 2023</em>
+</footer>
+</html>

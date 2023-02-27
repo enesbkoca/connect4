@@ -1,0 +1,93 @@
+//@ts-check
+
+const websocket = require("ws");
+
+var game = function(gameID) {
+    this.playerA = null;
+    this.playerB = null;
+    this.id = gameID
+    this.gameState = "0 ONGOING";
+};
+
+game.prototype.transitionStates = {
+    "0 ONGOING": 0,
+    "1 ONGOING": 1,
+    "2 ONGOING": 2,
+    "DRAW": 3,
+    "A": 4,
+    "B": 5,
+    "ABORTED": 6
+};
+
+game.prototype.transitionMatrix = [
+    [0, 1, 0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0, 0, 1],
+    [0, 0, 0, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+];
+
+game.prototype.isValidTransition = function (from, to) {
+    let i, j;
+
+    if (!(from in game.prototype.transitionStates)) {
+        return false;
+    } else {
+        i = game.prototype.transitionStates[from]
+    }
+
+    if (!(to in game.prototype.transitionStates)) {
+        return false;
+    } else {
+        j = game.prototype.transitionStates[to];
+    }
+
+    return game.prototype.transitionMatrix[i][j] == 1;
+};
+
+game.prototype.isValidState = function (state) {
+    return (state in game.prototype.transitionStates);
+}
+
+game.prototype.setStatus = function(new_state) {
+    if (
+        game.prototype.isValidState(new_state) &&
+        game.prototype.isValidTransition(this.gameState, new_state)
+    ) {
+        this.gameState = new_state;
+        console.log(`[LOG] State changed to ${new_state}`);
+    } else {
+        return new Error(`Impossible status change from ${this.gameState} to ${new_state}`);
+    }
+}
+
+game.prototype.hasTwoPlayers = function () {
+    const hasTwoBool = this.gameState == "2 ONGOING"
+    console.log(`[LOG] Game has two players: ${hasTwoBool}`);
+    return hasTwoBool;
+}
+
+game.prototype.addPlayer = function (player) {
+    if (this.gameState != "0 ONGOING" && this.gameState != "1 ONGOING") {
+        return new Error(`Can't add new player. Current game state: ${this.gameState}`
+        );
+    } 
+
+    const error = this.setStatus("1 ONGOING");
+    if (error instanceof Error) {
+        this.setStatus("2 ONGOING")
+    }
+
+    if (this.playerA == null) {
+        this.playerA = player;
+        return "A";
+    } else {
+        this.playerB = player;
+        return "B";
+    }
+
+};
+
+module.exports = game
