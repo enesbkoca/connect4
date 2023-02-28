@@ -2,12 +2,65 @@
 
 const websocket = require("ws");
 
+var gameBoard = function() {
+    this.boardState = [];
+
+    for (let i = 0; i < 6; i++) {
+        this.boardState.push(new Array(7).fill(0))
+    }
+}
+
+gameBoard.prototype.columnsIsFull = function (col) {
+    if (col > 7) {
+        return new Error("Column exceeding board size");
+    }
+
+    return this.boardState[0][col] != 0;
+}
+
+gameBoard.prototype.addToken = function (player, col) {
+    if (!this.columnsIsFull(col)) {
+        
+        let token;
+
+        if (player == "A") {
+            token = 1;    
+        } else {
+            token = 2;
+        }
+
+
+        for (let i = this.boardState.length - 1; i >= 0; i--) {
+            if (this.boardState[i][col] == 0) {
+                this.boardState[i][col] = token;
+                return;
+            }
+        }
+
+        
+
+    } else {
+        return new Error("Cannot add new token, columns is full")
+    }
+}
+
+gameBoard.prototype.isGameOver = function () {
+
+    // Check board to see if there is a winner, 
+    // return the winner or draw if there's no winner and no possible moves
+
+}
+
 var game = function(gameID) {
     this.playerA = null;
     this.playerB = null;
     this.id = gameID
     this.gameState = "0 ONGOING";
+    this.board = new gameBoard();
 };
+
+
+
 
 game.prototype.transitionStates = {
     "0 ONGOING": 0,
