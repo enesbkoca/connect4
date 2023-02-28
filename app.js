@@ -32,6 +32,21 @@ let game_count = 0;
 
 let currentGame = new Game(game_count++);
 
+
+setInterval(function () {
+	for (let i in websockets) {
+		if (Object.prototype.hasOwnProperty.call(websockets, i)) {
+			let gameObj = websockets[i];
+			// If the game has final status, delete the websocket
+			if (gameObj.finalStatus != null) {
+				delete websockets[i];
+			}
+		}
+	}
+
+}, 50000)
+
+
 wss.on("connection", function connection(ws) {
 
   if (currentGame.hasTwoPlayers() || currentGame.gameState == 'ABORTED') {

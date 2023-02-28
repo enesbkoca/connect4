@@ -57,6 +57,7 @@ var game = function(gameID) {
     this.id = gameID
     this.gameState = "0 ONGOING";
     this.board = new gameBoard();
+    this.finalStatus = null;
 };
 
 
@@ -113,6 +114,10 @@ game.prototype.setStatus = function(new_state) {
         console.log(`[LOG] State changed to ${new_state}`);
     } else {
         return new Error(`Impossible status change from ${this.gameState} to ${new_state}`);
+    }
+
+    if (this.gameState == "DRAW" || this.gameState == "A" || this.gameState == "B" || this.gameState == "ABORTED") {
+        this.finalStatus = this.gameState;
     }
 }
 
