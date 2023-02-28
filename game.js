@@ -1,6 +1,6 @@
 //@ts-check
 
-const websocket = require("ws");
+// const websocket = require("ws");
 
 var gameBoard = function() {
     this.boardState = [];

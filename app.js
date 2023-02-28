@@ -63,6 +63,28 @@ wss.on("connection", function connection(ws) {
 
     con.send(`You have been placed in game ${currentGame.id} as ${playerType}`)
     
+  	con.on("message", function incoming(message) {
+		console.log("Incoming messsage: " + message.toString());
+		move = message.toString();
+		let j = +move.split(",")[1];
+
+		const gameObj = websockets[con["id"]];
+		const player = gameObj.playerA == con ? "A" : "B";
+		console.log(player, j)
+		gameObj.board.addToken(player, j);
+		console.log(gameObj.board);
+		
+		con.send(JSON.stringify(gameObj.board));
+
+		// console.log(oMsg);
+
+		// if (isPlayerA) {
+		// 	console.log("Message from Player A");
+		// } else {
+		// 	console.log("Message from Player B")
+		// }
+	})
+
     con.on("close", function(code) {
         console.log(`${con["id"]} disconnected ...`);
 		
