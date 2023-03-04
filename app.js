@@ -61,28 +61,38 @@ wss.on("connection", function connection(ws) {
     console.log('[LOG] Player ' + con["id"] + " placed in game " + currentGame.id + " as " + playerType)
     connected++;
 
-    con.send(`You have been placed in game ${currentGame.id} as ${playerType}`)
-    
+    // con.send(`You have been placed in game ${currentGame.id} as ${playerType}`)
+	con.send((playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B));
+
   	con.on("message", function incoming(message) {
-		console.log("Incoming messsage: " + message.toString());
-		move = message.toString();
-		let j = +move.split(",")[1];
-
-		const gameObj = websockets[con["id"]];
-		const player = gameObj.playerA == con ? "A" : "B";
-		console.log(player, j)
-		gameObj.board.addToken(player, j);
-		console.log(gameObj.board);
+		// console.log("Incoming messsage: " + JSON.parse(message));
 		
-		con.send(JSON.stringify(gameObj.board));
-
-		// console.log(oMsg);
-
-		// if (isPlayerA) {
-		// 	console.log("Message from Player A");
-		// } else {
-		// 	console.log("Message from Player B")
-		// }
+		const {type, data} = JSON.parse(message);
+		console.log(type);
+		console.log(data);
+		
+		if (type === "ADD-TOKEN") {
+			const gameObj = websockets[con["id"]];
+			const player = gameObj.playerA == con ? "A" : "B";
+			console.log("Current player: " + player)
+			console.log("Turn of  " + gameObj.turn)
+			if (player != gameObj.turn) {
+				console.log('Not your turn')
+			} else {
+				const j = data[1];
+				
+				gameObj.board.addToken(player, j);
+				let boardMsg = messages.BOARD;
+				boardMsg.data = gameObj.board
+				gameObj.playerA.send(JSON.stringify(boardMsg));
+				gameObj.playerB.send(JSON.stringify(boardMsg));
+				
+				// con.send(JSON.stringify(boardMsg));
+				gameObj.
+				
+				changeTurn();
+			}
+		}
 	})
 
     con.on("close", function(code) {

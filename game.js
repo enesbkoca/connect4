@@ -54,6 +54,7 @@ gameBoard.prototype.isGameOver = function () {
 var game = function(gameID) {
     this.playerA = null;
     this.playerB = null;
+    this.turn = "A";
     this.id = gameID
     this.gameState = "0 ONGOING";
     this.board = new gameBoard();
@@ -61,6 +62,16 @@ var game = function(gameID) {
 };
 
 
+game.prototype.changeTurn = function () {
+    // if (this.turn == this.playerA) {
+    //     this.turn = this.playerB;
+    // } else {
+    //     this.turn = this.playerB;
+    // }
+
+    (this.turn == "A") ? this.turn = "B" : this.turn = "A";
+    console.log('Turn for ' + this.turn);
+}
 
 
 game.prototype.transitionStates = {
