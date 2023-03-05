@@ -9,6 +9,7 @@ const port = process.argv[2];
 const app = express();
 
 const messages = require("./public/javascripts/messages");
+const {sendMessage} = require('./communication.js');
 
 const server = http.createServer(app);
 const wss = new websocket.Server({ server });
@@ -59,30 +60,27 @@ wss.on("connection", function connection(ws) {
     console.log('[LOG] Player ' + con["id"] + " placed in game " + currentGame.id + " as " + playerType)
     connected++;
 
+	// Senb player information
+	sendMessage(currentGame, messages.PLAYER_TYPE, playerType, playerType);
+	// setTimeout(sendMessage, 1000, currentGame, messages.PLAYER_TYPE, playerType, playerType);
 
 	if (currentGame.hasTwoPlayers()) {
-		
-		let startedMsg = messages.GAME_CONTINUING
-		startedMsg.data = true;
-		currentGame.playerA.send(JSON.stringify(startedMsg));
-		currentGame.playerB.send(JSON.stringify(startedMsg));
+		// Start game and set turn
+		sendMessage(currentGame, messages.GAME_CONTINUING, true);
+		sendMessage(currentGame, messages.GAME_TURN, currentGame.turn);
 
-		let turnMsg = messages.GAME_TURN;
-		turnMsg.data = "A";
-		currentGame.playerA.send(JSON.stringify(turnMsg))
-		currentGame.playerB.send(JSON.stringify(turnMsg))
-
+		// Create a new game because previous one started
 		currentGame = new Game(game_count++);
 		console.log(currentGame.gameState);
 
 	  } else if (currentGame.gameState == 'ABORTED') {
+		// Create a new game because previous one aborted
 		currentGame = new Game(game_count++);
 		console.log(currentGame.gameState);
 	  }
 	
 	
-    // con.send(`You have been placed in game ${currentGame.id} as ${playerType}`)
-	con.send((playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B));
+    
 
   	con.on("message", function incoming(message) {
 		// console.log("Incoming messsage: " + JSON.parse(message));
@@ -94,21 +92,17 @@ wss.on("connection", function connection(ws) {
 		if (type === "ADD-TOKEN") {
 			const gameObj = websockets[con["id"]];
 			const player = gameObj.playerA == con ? "A" : "B";
-			console.log("Current player: " + player)
-			console.log("Turn of  " + gameObj.turn)
 			if (player != gameObj.turn) {
-				console.log('Not your turn')
+				console.log(`Player ${player} cannot add token to row ${j}, not their turn`);
 			} else {
 				const j = data[1];
+				console.log(`Player ${player} adding token to row ${j}`);
 				
 				gameObj.board.addToken(player, j);
-				let boardMsg = messages.BOARD_STATE;
-				boardMsg.data = gameObj.board.boardState;
-				gameObj.playerA.send(JSON.stringify(boardMsg));
-				gameObj.playerB.send(JSON.stringify(boardMsg));
-				gameObj.
+				sendMessage(gameObj, messages.BOARD_STATE, gameObj.board.boardState)
 				
-				changeTurn();
+				gameObj.changeTurn();
+				sendMessage(gameObj, messages.GAME_TURN, gameObj.turn);
 			}
 		}
 	})
@@ -125,11 +119,8 @@ wss.on("connection", function connection(ws) {
               gameObj.setStatus("ABORTED"); 
 			}
 			
-			let startedMsg = messages.GAME_CONTINUING
-			startedMsg.data = false;
-		
 			try {
-			gameObj.playerA.send(JSON.stringify(startedMsg));
+			sendMessage(gameObj, messages.GAME_CONTINUING, false, "A")
 			gameObj.playerA.close();
 			gameObj.playerA = null;
 			numberOfPlayers++;
@@ -138,7 +129,7 @@ wss.on("connection", function connection(ws) {
 			}
 	
 			try {
-			gameObj.playerB.send(JSON.stringify(startedMsg));
+			sendMessage(gameObj, messages.GAME_CONTINUING, false, "B")
 			gameObj.playerB.close();
 			gameObj.playerB = null;
 			numberOfPlayers++;
