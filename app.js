@@ -1,3 +1,5 @@
+//@ts-check
+
 const express = require("express");
 const http = require("http");
 const websocket = require("ws");
@@ -33,6 +35,7 @@ let game_count = 0;
 let currentGame = new Game(game_count++);
 
 
+// Delete empty websockets in a certain time interval
 setInterval(function () {
 	for (let i in websockets) {
 		if (Object.prototype.hasOwnProperty.call(websockets, i)) {
@@ -49,11 +52,6 @@ setInterval(function () {
 
 wss.on("connection", function connection(ws) {
 
-  if (currentGame.hasTwoPlayers() || currentGame.gameState == 'ABORTED') {
-    currentGame = new Game(game_count++);
-    console.log(currentGame.gameState);
-  }
-
     let con = ws;
     con.id = connectionID++;
     const playerType = currentGame.addPlayer(con)
@@ -61,6 +59,28 @@ wss.on("connection", function connection(ws) {
     console.log('[LOG] Player ' + con["id"] + " placed in game " + currentGame.id + " as " + playerType)
     connected++;
 
+
+	if (currentGame.hasTwoPlayers()) {
+		
+		let startedMsg = messages.GAME_CONTINUING
+		startedMsg.data = true;
+		currentGame.playerA.send(JSON.stringify(startedMsg));
+		currentGame.playerB.send(JSON.stringify(startedMsg));
+
+		let turnMsg = messages.GAME_TURN;
+		turnMsg.data = "A";
+		currentGame.playerA.send(JSON.stringify(turnMsg))
+		currentGame.playerB.send(JSON.stringify(turnMsg))
+
+		currentGame = new Game(game_count++);
+		console.log(currentGame.gameState);
+
+	  } else if (currentGame.gameState == 'ABORTED') {
+		currentGame = new Game(game_count++);
+		console.log(currentGame.gameState);
+	  }
+	
+	
     // con.send(`You have been placed in game ${currentGame.id} as ${playerType}`)
 	con.send((playerType == "A" ? messages.S_PLAYER_A : messages.S_PLAYER_B));
 
@@ -82,12 +102,10 @@ wss.on("connection", function connection(ws) {
 				const j = data[1];
 				
 				gameObj.board.addToken(player, j);
-				let boardMsg = messages.BOARD;
-				boardMsg.data = gameObj.board
+				let boardMsg = messages.BOARD_STATE;
+				boardMsg.data = gameObj.board.boardState;
 				gameObj.playerA.send(JSON.stringify(boardMsg));
 				gameObj.playerB.send(JSON.stringify(boardMsg));
-				
-				// con.send(JSON.stringify(boardMsg));
 				gameObj.
 				
 				changeTurn();
@@ -106,8 +124,12 @@ wss.on("connection", function connection(ws) {
             if (gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
               gameObj.setStatus("ABORTED"); 
 			}
-
+			
+			let startedMsg = messages.GAME_CONTINUING
+			startedMsg.data = false;
+		
 			try {
+			gameObj.playerA.send(JSON.stringify(startedMsg));
 			gameObj.playerA.close();
 			gameObj.playerA = null;
 			numberOfPlayers++;
@@ -116,6 +138,7 @@ wss.on("connection", function connection(ws) {
 			}
 	
 			try {
+			gameObj.playerB.send(JSON.stringify(startedMsg));
 			gameObj.playerB.close();
 			gameObj.playerB = null;
 			numberOfPlayers++;

@@ -1,6 +1,16 @@
 // @ts-check
 
 (function(exports){
+    exports.GAME_CONTINUING = {
+        type: "GAME-CONTINUING",
+        data: false
+    };
+
+    exports.GAME_TURN = {
+        type: "GAME-TURN",
+        data: ""
+    }
+
     exports.T_PLAYER_TYPE = "PLAYER-TYPE";
     exports.O_PLAYER_A = {
         type: exports.T_PLAYER_TYPE,
@@ -22,9 +32,10 @@
         data: null,
     }
 
-    exports.BOARD = {
-        type: "BOARD",
+    exports.BOARD_STATE = {
+        type: "BOARD-STATE",
         data: null,
     }
 
+// @ts-ignore
 }(typeof exports === "undefined" ? (this.Messages = {}) : exports));
