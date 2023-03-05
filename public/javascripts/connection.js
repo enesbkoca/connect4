@@ -6,7 +6,7 @@ const socket = new WebSocket("ws://localhost:3000");
 socket.onmessage = function (event) {
     console.log("[LOG] Message from Server: " + event.data)
     let msg = event.data;
-
+    
     const {type, data} = JSON.parse(msg);
 
         if (type === "BOARD-STATE") {
@@ -34,6 +34,8 @@ socket.onmessage = function (event) {
     } else {
         console.log("Invalid Message");
     } 
+
+    updateGameStatistics();
 };
 
 

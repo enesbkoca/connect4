@@ -79,8 +79,6 @@ wss.on("connection", function connection(ws) {
 		console.log(currentGame.gameState);
 	  }
 	
-	
-    
 
   	con.on("message", function incoming(message) {
 		// console.log("Incoming messsage: " + JSON.parse(message));
