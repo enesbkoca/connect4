@@ -31,7 +31,12 @@ socket.onmessage = function (event) {
     } else if (type === "GAME-TURN") {
         game.turn = data;
 
-    } else {
+    } else if (type === "GAME-WINNER") {
+        game.isContinuing = false;
+        game.winner = data;
+        gameOver();
+    }
+    else {
         console.log("Invalid Message");
     } 
 

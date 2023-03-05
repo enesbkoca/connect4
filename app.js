@@ -99,8 +99,12 @@ wss.on("connection", function connection(ws) {
 				gameObj.board.addToken(player, j);
 				sendMessage(gameObj, messages.BOARD_STATE, gameObj.board.boardState)
 				
-				gameObj.changeTurn();
-				sendMessage(gameObj, messages.GAME_TURN, gameObj.turn);
+				if (gameObj.isGameOver(player)) {
+					sendMessage(gameObj, messages.GAME_WINNER, player);
+				} else {
+					gameObj.changeTurn();
+					sendMessage(gameObj, messages.GAME_TURN, gameObj.turn);
+				}
 			}
 		}
 	})

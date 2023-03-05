@@ -13,6 +13,11 @@
         data: null
     };
 
+    exports.GAME_WINNER = {
+        type: "GAME-WINNER",
+        data: null
+    }
+
     exports.PLAYER_TYPE = {
         type: "PLAYER-TYPE",
         data: null

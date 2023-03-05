@@ -28,28 +28,19 @@ gameBoard.prototype.addToken = function (player, col) {
         } else {
             token = 2;
         }
-
-
         for (let i = this.boardState.length - 1; i >= 0; i--) {
             if (this.boardState[i][col] == 0) {
                 this.boardState[i][col] = token;
                 return;
             }
         }
-
-        
-
     } else {
         return new Error("Cannot add new token, columns is full")
     }
 }
 
-gameBoard.prototype.isGameOver = function () {
 
-    // Check board to see if there is a winner, 
-    // return the winner or draw if there's no winner and no possible moves
 
-}
 
 var game = function(gameID) {
     this.playerA = null;
@@ -61,6 +52,50 @@ var game = function(gameID) {
     this.finalStatus = null;
 };
 
+game.prototype.isGameOver = function (playerType) {
+    if (this.checkBoard(playerType)) {
+        console.log(playerType + " wins the game!");
+        this.setStatus(playerType);
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+game.prototype.checkBoard = function (playerType) {
+    // Check board to see if there is a winner, 
+    // return the winner or draw if there's no winner and no possible moves
+    let paddedBoard = [];
+
+    for (let i = 0; i < 6; i++) {
+        paddedBoard.push(new Array(10).fill(0))
+        paddedBoard[i].splice(0, 7, ...this.board.boardState[i])
+    }
+    paddedBoard.push(new Array(10).fill(0))
+    paddedBoard.push(new Array(10).fill(0))
+    paddedBoard.push(new Array(10).fill(0))
+
+    if (playerType === "A"){
+        var playerToken = 1;
+    } else if (playerType === "B") {
+        var playerToken = 2;
+    } else {
+        throw new Error('Invalid player type: ' + playerType);
+    }
+
+    for (let i = 0; i < paddedBoard.length - 3; i++) {
+        for (let j = 0; j < paddedBoard[0].length - 3; j++) {
+            if ([paddedBoard[i][j], paddedBoard[i+1][j], paddedBoard[i+2][j], paddedBoard[i+3][j]].every(value => {return value == playerToken}) ||
+                [paddedBoard[i][j], paddedBoard[i+1][j+1], paddedBoard[i+2][j+2], paddedBoard[i+3][j+3]].every(value => {return value == playerToken}) ||
+                [paddedBoard[i][j], paddedBoard[i][j+1],paddedBoard[i][j+2], paddedBoard[i][j+3]].every(value => {return value == playerToken})) {
+
+                    return true;
+                }
+        }
+    }
+    return false;
+}
 
 game.prototype.changeTurn = function () {
     // if (this.turn == this.playerA) {

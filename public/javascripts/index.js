@@ -3,9 +3,18 @@ const game = {
     player: null,
     turn: null,
     isContinuing: false,
+    winner: null,
 }
 
 const gameButtons = document.querySelectorAll('.fill');
+
+const gameOver = function () {
+    if (game.player == game.winner) {
+        alert("You WON")
+    } else {
+        alert("You LOST")
+    }
+}
 
 // Send move to server
 const sendMove = function (move) {
