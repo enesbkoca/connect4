@@ -52,6 +52,11 @@ setInterval(function () {
 
 
 wss.on("connection", function connection(ws) {
+	if (currentGame.gameState == 'ABORTED') {
+		// Create a new game because previous one aborted
+		currentGame = new Game(game_count++);
+		console.log(currentGame.gameState);
+	}
 
     let con = ws;
     con.id = connectionID++;
@@ -60,7 +65,7 @@ wss.on("connection", function connection(ws) {
     console.log('[LOG] Player ' + con["id"] + " placed in game " + currentGame.id + " as " + playerType)
     connected++;
 
-	// Senb player information
+	// Send player information
 	sendMessage(currentGame, messages.PLAYER_TYPE, playerType, playerType);
 	// setTimeout(sendMessage, 1000, currentGame, messages.PLAYER_TYPE, playerType, playerType);
 
@@ -70,11 +75,6 @@ wss.on("connection", function connection(ws) {
 		sendMessage(currentGame, messages.GAME_TURN, currentGame.turn);
 
 		// Create a new game because previous one started
-		currentGame = new Game(game_count++);
-		console.log(currentGame.gameState);
-
-	  } else if (currentGame.gameState == 'ABORTED') {
-		// Create a new game because previous one aborted
 		currentGame = new Game(game_count++);
 		console.log(currentGame.gameState);
 	  }

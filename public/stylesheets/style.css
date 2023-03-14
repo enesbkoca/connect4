@@ -34,7 +34,13 @@ input[type=submit] {
 .fill {
   --color: #a972cb;
   --hover: #cb72aa;
+  background-color: #210641;
 }
+
+.fill:nth-child(2n) {
+  background-color: #3e3d3f;
+}
+
 button {
   color: var(--color);
   transition: 0.35s;
