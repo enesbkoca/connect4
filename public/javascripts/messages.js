@@ -12,6 +12,11 @@
         type: "GAME-TURN",
         data: null
     };
+    
+    exports.GAME_STATUS = {
+        type: "GAME-STATUS",
+        data: null
+    };
 
     exports.GAME_WINNER = {
         type: "GAME-WINNER",

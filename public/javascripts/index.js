@@ -6,7 +6,7 @@ const game = {
     winner: null,
 }
 
-const gameButtons = document.querySelectorAll('.fill');
+const gameButtons = document.querySelectorAll('.game-token');
 
 const gameOver = function () {
     if (game.player == game.winner) {

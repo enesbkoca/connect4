@@ -20,27 +20,30 @@ socket.onmessage = function (event) {
             }
         }
 
-    } else if (type === "GAME-CONTINUING") {
-        game.isContinuing = data;
-        console.log("Game continuing: " + game.isContinuing);
+        } else if (type === "GAME-CONTINUING") {
+            game.isContinuing = data;
+            console.log("Game continuing: " + game.isContinuing);
 
-    } else if (type === "PLAYER-TYPE") {
-        game.player = data;
-        console.log("You are player " + game.player)
+        } else if (type === "PLAYER-TYPE") {
+            game.player = data;
+            console.log("You are player " + game.player)
 
-    } else if (type === "GAME-TURN") {
-        game.turn = data;
+        } else if (type === "GAME-TURN") {
+            game.turn = data;
 
-    } else if (type === "GAME-WINNER") {
-        game.isContinuing = false;
-        game.winner = data;
-        gameOver();
-    }
-    else {
-        console.log("Invalid Message");
-    } 
+        } else if (type === "GAME-WINNER") {
+            game.isContinuing = false;
+            game.winner = data;
+            gameOver();
+        } else if (type === "GAME-STATUS") {
+            game.status = data;
+            updateGameStatus();
+        }
+        else {
+            console.log("Invalid Message");
+        } 
 
-    updateGameStatistics();
+        updateGameStatistics();
 };
 
 

@@ -73,6 +73,7 @@ wss.on("connection", function connection(ws) {
 		// Start game and set turn
 		sendMessage(currentGame, messages.GAME_CONTINUING, true);
 		sendMessage(currentGame, messages.GAME_TURN, currentGame.turn);
+		sendMessage(currentGame, messages.GAME_STATUS, currentGame.gameState);
 
 		// Create a new game because previous one started
 		currentGame = new Game(game_count++);
@@ -86,7 +87,9 @@ wss.on("connection", function connection(ws) {
 		const {type, data} = JSON.parse(message);
 		console.log(type);
 		console.log(data);
+
 		
+
 		if (type === "ADD-TOKEN") {
 			const gameObj = websockets[con["id"]];
 			const player = gameObj.playerA == con ? "A" : "B";
@@ -98,7 +101,8 @@ wss.on("connection", function connection(ws) {
 				
 				gameObj.board.addToken(player, j);
 				sendMessage(gameObj, messages.BOARD_STATE, gameObj.board.boardState)
-				
+				sendMessage(gameObj, messages.GAME_STATUS, gameObj.gameState);
+
 				if (gameObj.isGameOver(player)) {
 					sendMessage(gameObj, messages.GAME_WINNER, player);
 				} else {

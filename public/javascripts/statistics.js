@@ -1,5 +1,7 @@
 const playersHeader = document.getElementById('connected_players');
-const gameStats = document.getElementById('game_stats')
+const gameStatistics = document.getElementById('game_stats')
+const gameStatus = document.getElementById('status')
+
 
 function updatePlayerCount() {
     setTimeout(() => {
@@ -24,7 +26,12 @@ const showConnectedPlayers = function (connectedPlayers) {
 }
 
 const updateGameStatistics = function () {
-    gameStats.innerHTML = `<h4> Player: ${game.player}</h4><h4> Turn: ${game.turn}</h4><h4> Continuing: ${game.isContinuing}</h4>`
+    gameStatistics.innerHTML = `<h4> Player: ${game.player}</h4><h4> Turn: ${game.turn}</h4><h4> Continuing: ${game.isContinuing}</h4>`
+    
+}
+
+const updateGameStatus = function () {
+    gameStatus.innerHTML = `<h1>${game.status}</h1>`
 }
 
 updatePlayerCount();
